@@ -1,27 +1,12 @@
-import React, { createContext } from 'react';
-
-type StepComponent = React.ElementType;
-interface StepWizardContextType {
-  steps: StepComponent[];
-  currentStep: number;
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
-  next: () => void;
-  prev: () => void;
-}
-const StepWizardContext = createContext<StepWizardContextType | undefined>(
-  undefined
-);
-
-const useStepWizard = () => {
-  const context = React.useContext(StepWizardContext);
-  if (!context) {
-    throw new Error('useStepWizard must be used within a StepWizardProvider');
-  }
-  return context;
-};
+import React from 'react';
+import { useStepWizard, StepWizardContext } from './useStepWizard';
+import type { StepWizardContextType } from './useStepWizard';
 
 type StepWizardProps = {
-  steps: StepComponent[];
+  steps: React.ElementType[];
+  currentStep?: number;
+  setCurrentStep?: React.Dispatch<React.SetStateAction<number>>;
+  onFinish?: () => void;
   children?:
     | React.ReactNode
     | ((ctx: StepWizardContextType) => React.ReactNode);
@@ -39,8 +24,18 @@ type StepWizardType = React.FC<StepWizardProps> & {
   Actions: React.FC;
 };
 
-const StepWizard: StepWizardType = ({ children, steps }) => {
-  const [currentStep, setCurrentStep] = React.useState(0);
+const StepWizard: StepWizardType = ({
+  children,
+  steps,
+  currentStep: controlledStep,
+  setCurrentStep: controlledSetStep,
+  onFinish,
+}) => {
+  const isControlled =
+    controlledStep !== undefined && controlledSetStep !== undefined;
+  const [uncontrolledStep, setUncontrolledStep] = React.useState(0);
+  const currentStep = isControlled ? controlledStep : uncontrolledStep;
+  const setCurrentStep = isControlled ? controlledSetStep : setUncontrolledStep;
   const next = () =>
     setCurrentStep((prevStep) => Math.min(prevStep + 1, steps.length - 1));
   const prev = () => setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
@@ -50,10 +45,15 @@ const StepWizard: StepWizardType = ({ children, steps }) => {
     setCurrentStep,
     next,
     prev,
+    onFinish,
   };
   return (
     <StepWizardContext.Provider value={wizardContext}>
-      {typeof children === 'function' ? children(wizardContext) : <div>{children}</div>}
+      {typeof children === 'function' ? (
+        children(wizardContext)
+      ) : (
+        <div>{children}</div>
+      )}
     </StepWizardContext.Provider>
   );
 };
@@ -87,7 +87,8 @@ const Body: React.FC = () => {
 };
 
 const Actions: React.FC = () => {
-  const { prev, next, currentStep, steps } = useStepWizard();
+  const { prev, next, currentStep, onFinish, steps } = useStepWizard();
+  const isLastStep = currentStep === steps.length - 1;
   return (
     <div>
       <button
@@ -97,9 +98,11 @@ const Actions: React.FC = () => {
       >
         Previous
       </button>
-      <button onClick={next} disabled={currentStep === steps.length - 1}>
-        Next
-      </button>
+      {isLastStep ? (
+        <button onClick={onFinish}>Finish</button>
+      ) : (
+        <button onClick={next}>Next</button>
+      )}
     </div>
   );
 };

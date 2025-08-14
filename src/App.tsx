@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <h1>Headless wizard</h1>
-      <StepWizard steps={steps}>
+      <StepWizard steps={steps} onFinish={() => alert('Finished!')}>
         <StepWizard.Progress />
         <StepWizard.Body />
         <StepWizard.Actions />
