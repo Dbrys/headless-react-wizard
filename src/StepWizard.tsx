@@ -12,7 +12,7 @@ type StepWizardProps = {
     | ((ctx: StepWizardContextType) => React.ReactNode);
 };
 type ProgressIndicatorProps = {
-  index: number;
+  step: number;
   status: 'completed' | 'current' | 'upcoming';
 };
 type ProgressProps = {
@@ -59,22 +59,26 @@ const StepWizard: StepWizardType = ({
 };
 
 const DefaultIndicator: React.FC<ProgressIndicatorProps> = ({
-  index,
+  step,
   status,
-}) => <span>{status === 'completed' ? '✓' : index + 1}</span>;
+}) => <span>{status === 'completed' ? '✓' : step + 1}</span>;
 
 const Progress: React.FC<ProgressProps> = ({
   indicator: Indicator = DefaultIndicator,
 }) => {
   const { steps, currentStep } = useStepWizard();
   return (
-    <div>
+    <div
+      role="progressbar"
+      aria-valuenow={currentStep + 1}
+      aria-valuemax={steps.length}
+    >
       {steps.map((_, idx) => {
         let status: 'completed' | 'current' | 'upcoming';
         if (idx < currentStep) status = 'completed';
         else if (idx === currentStep) status = 'current';
         else status = 'upcoming';
-        return <Indicator key={idx} index={idx} status={status} />;
+        return <Indicator key={idx} step={idx} status={status} />;
       })}
     </div>
   );
