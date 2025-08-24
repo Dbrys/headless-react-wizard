@@ -21,5 +21,4 @@ const steps = [
   <StepWizard.Body />
   <StepWizard.Actions />
 </StepWizard>
-```
 

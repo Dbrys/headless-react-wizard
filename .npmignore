@@ -1,0 +1,29 @@
+# Exclude examples and local dev files from published package
+examples/
+scripts/
+tests/
+__tests__/
+
+# Do not publish source when distributing compiled output
+src/
+
+# Local dev tooling/config
+.vscode/
+.idea/
+tsconfig*.json
+tsup.config.ts
+vite.config.ts
+.eslintrc*
+eslint.config.js
+.prettierrc*
+
+# Build artifacts we don't want published (keep built dist and typings)
+node_modules/
+dist/*.map
+coverage/
+.cache/
+*.log
+
+# Dotfiles
+.gitignore
+pnpm-lock.yaml

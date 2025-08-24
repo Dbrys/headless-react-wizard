@@ -7,19 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-assets
-dist
-dist-ssr
+node_modules/
+**/node_modules/
+
+# project outputs
+dist/
+dist-ssr/
+
+# TypeScript
+*.tsbuildinfo
+
+# Local env / secrets
 *.local
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# test / coverage
+coverage/
+.nyc_output/
+
+# caches
+.cache/
+.vite/
+.eslintcache
